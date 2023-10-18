@@ -1,6 +1,10 @@
 import express from 'express';
 import { authorizedRoles, isAuthenticated } from '../utils/auth';
-import { editCourse, uploadCourse } from '../controllers/course.controller';
+import {
+  editCourse,
+  getSingleCourse,
+  uploadCourse,
+} from '../controllers/course.controller';
 const router = express.Router();
 
 router.post(
@@ -16,5 +20,7 @@ router.patch(
   authorizedRoles('admin'),
   editCourse,
 );
+
+router.get('/get-course/:id', getSingleCourse);
 
 export default router;

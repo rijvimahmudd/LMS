@@ -3,7 +3,7 @@ import { catchAsyncError } from '../middleware/catchAsyncError';
 import ErrorHandler from '../utils/ErrorHandler';
 import { v2 as cloudinary } from 'cloudinary';
 import { createCourse } from '../services/course.service';
-import courseModel, { ICourse } from '../models/course.model';
+import courseModel, { ICourse, ICourseData } from '../models/course.model';
 
 // upload course
 export const uploadCourse = catchAsyncError(
@@ -71,8 +71,33 @@ export const editCourse = catchAsyncError(
 );
 
 // get single course
-export const getSingleCorse = catchAsyncError(
+interface ICourseDataMod {
+  title: string;
+  description: string;
+}
+export const getSingleCourse = catchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
-    
+    try {
+      const course = await courseModel.findById(req.params.id);
+
+      if (course) {
+        const courseData: ICourseDataMod[] = course?.courseData.map(
+          (item: ICourseData) => {
+            return {
+              title: item.title,
+              description: item.description,
+            };
+          },
+        );
+
+        course.courseData = courseData as ICourseData[];
+      }
+      res.status(200).json({
+        success: true,
+        course,
+      });
+    } catch (error: unknown) {
+      return next(new ErrorHandler((error as Error).message, 400));
+    }
   },
 );
