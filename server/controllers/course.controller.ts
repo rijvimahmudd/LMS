@@ -7,97 +7,97 @@ import courseModel, { ICourse, ICourseData } from '../models/course.model';
 
 // upload course
 export const uploadCourse = catchAsyncError(
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const data: ICourse = req.body;
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const data: ICourse = req.body;
 
-      // thumbnail pass from front-end as string and return it as object with necessary properties
-      const thumbnail = data.thumbnail;
-      if (thumbnail && typeof thumbnail === 'string') {
-        const myCloud = await cloudinary.uploader.upload(thumbnail, {
-          upload_preset: 'courses',
-        });
-        data.thumbnail = {
-          public_id: myCloud.public_id,
-          url: myCloud.secure_url,
-        } as {
-          public_id: string;
-          url: string;
-        };
-      }
-      createCourse(data, res);
-    } catch (error: unknown) {
-      next(new ErrorHandler((error as Error).message, 500));
-    }
-  },
+			// thumbnail pass from front-end as string and return it as object with necessary properties
+			const thumbnail = data.thumbnail;
+			if (thumbnail && typeof thumbnail === 'string') {
+				const myCloud = await cloudinary.uploader.upload(thumbnail, {
+					upload_preset: 'courses',
+				});
+				data.thumbnail = {
+					public_id: myCloud.public_id,
+					url: myCloud.secure_url,
+				} as {
+					public_id: string;
+					url: string;
+				};
+			}
+			createCourse(data, res);
+		} catch (error: unknown) {
+			next(new ErrorHandler((error as Error).message, 500));
+		}
+	}
 );
 
 // edit course
 export const editCourse = catchAsyncError(
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const data = req.body;
-      const thumbnail = data.thumbnail;
-      if (thumbnail) {
-        await cloudinary.uploader.destroy(thumbnail.public_id);
-        const myCloud = await cloudinary.uploader.upload(thumbnail, {
-          upload_preset: 'courses',
-        });
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const data = req.body;
+			const thumbnail = data.thumbnail;
+			if (thumbnail) {
+				await cloudinary.uploader.destroy(thumbnail.public_id);
+				const myCloud = await cloudinary.uploader.upload(thumbnail, {
+					upload_preset: 'courses',
+				});
 
-        data.thumbnail = {
-          public_id: myCloud.public_id,
-          url: myCloud.secure_url,
-        };
-      }
+				data.thumbnail = {
+					public_id: myCloud.public_id,
+					url: myCloud.secure_url,
+				};
+			}
 
-      const courseId = req.params.id;
-      if (courseId) {
-        const course = await courseModel.findByIdAndUpdate(
-          courseId,
-          { $set: data },
-          {
-            new: true,
-          },
-        );
-        res.status(201).json({
-          success: true,
-          course,
-        });
-      }
-    } catch (error: unknown) {
-      return next(new ErrorHandler((error as Error).message, 400));
-    }
-  },
+			const courseId = req.params.id;
+			if (courseId) {
+				const course = await courseModel.findByIdAndUpdate(
+					courseId,
+					{ $set: data },
+					{
+						new: true,
+					}
+				);
+				res.status(201).json({
+					success: true,
+					course,
+				});
+			}
+		} catch (error: unknown) {
+			return next(new ErrorHandler((error as Error).message, 400));
+		}
+	}
 );
 
 // get single course
 interface ICourseDataMod {
-  title: string;
-  description: string;
+	title: string;
+	description: string;
 }
 export const getSingleCourse = catchAsyncError(
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const course = await courseModel.findById(req.params.id);
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const course = await courseModel.findById(req.params.id);
 
-      if (course) {
-        const courseData: ICourseDataMod[] = course?.courseData.map(
-          (item: ICourseData) => {
-            return {
-              title: item.title,
-              description: item.description,
-            };
-          },
-        );
+			if (course) {
+				const courseData: ICourseDataMod[] = course?.courseData.map(
+					(item: ICourseData) => {
+						return {
+							title: item.title,
+							description: item.description,
+						};
+					}
+				);
 
-        course.courseData = courseData as ICourseData[];
-      }
-      res.status(200).json({
-        success: true,
-        course,
-      });
-    } catch (error: unknown) {
-      return next(new ErrorHandler((error as Error).message, 400));
-    }
-  },
+				course.courseData = courseData as ICourseData[];
+			}
+			res.status(200).json({
+				success: true,
+				course,
+			});
+		} catch (error: unknown) {
+			return next(new ErrorHandler((error as Error).message, 400));
+		}
+	}
 );

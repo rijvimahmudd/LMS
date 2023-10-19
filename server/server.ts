@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
-import { app } from './app.ts';
-import connectDB from './utils/db.ts';
+import { app } from './app';
+import connectDB from './utils/db';
 import { v2 as cloudinary } from 'cloudinary';
 
 const port: number | string = process.env.PORT || 8080;
