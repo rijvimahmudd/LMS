@@ -1,6 +1,7 @@
 import express, { Router } from 'express';
 import {
   activateUser,
+  getAllUsers,
   getUserInfo,
   loginUser,
   logoutUser,
@@ -11,7 +12,7 @@ import {
   updatePassword,
   updateUserInfo,
 } from '../controllers/user.controller';
-import { isAuthenticated } from '../utils/auth';
+import { authorizedRoles, isAuthenticated } from '../utils/auth';
 const router: Router = express.Router();
 
 router.get('/logout', isAuthenticated, logoutUser);
@@ -33,5 +34,11 @@ router.patch('/update-user-info', isAuthenticated, updateUserInfo);
 router.patch('/update-user-password', isAuthenticated, updatePassword);
 
 router.patch('/update-user-avatar', isAuthenticated, updateAvatar);
+router.get(
+  '/get-users',
+  isAuthenticated,
+  authorizedRoles('admin'),
+  getAllUsers,
+);
 
 export default router;

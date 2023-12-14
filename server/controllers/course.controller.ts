@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { catchAsyncError } from '../middleware/catchAsyncError';
 import ErrorHandler from '../utils/ErrorHandler';
 import { v2 as cloudinary } from 'cloudinary';
-import { createCourse } from '../services/course.service';
+import { createCourse, getAllCoursesService } from '../services/course.service';
 import courseModel, {
   IComment,
   ICourse,
@@ -418,6 +418,17 @@ export const addReplyToReview = catchAsyncError(
         success: true,
         course,
       });
+    } catch (error: unknown) {
+      return next(new ErrorHandler((error as Error).message, 400));
+    }
+  },
+);
+
+// get all courses --only for admin
+export const getAllCoursesAdmin = catchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      getAllCoursesService(res);
     } catch (error: unknown) {
       return next(new ErrorHandler((error as Error).message, 400));
     }

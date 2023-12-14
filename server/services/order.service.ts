@@ -12,3 +12,12 @@ export const newOrder = catchAsyncError(
     });
   },
 );
+
+// get all orders
+export const getAllOrdersService = async (res: Response) => {
+  const orders = await Order.find().sort({ createdAt: -1 });
+  res.status(200).json({
+    success: true,
+    orders,
+  });
+};
