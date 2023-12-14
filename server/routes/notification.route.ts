@@ -1,6 +1,9 @@
 import express from 'express';
 import { authorizedRoles, isAuthenticated } from '../utils/auth';
-import { getNotifications } from '../controllers/notification.controller';
+import {
+  getNotifications,
+  updateNotification,
+} from '../controllers/notification.controller';
 const router = express.Router();
 
 router.get(
@@ -10,4 +13,10 @@ router.get(
   getNotifications,
 );
 
+router.patch(
+  '/update-notification/:id',
+  isAuthenticated,
+  authorizedRoles('admin'),
+  updateNotification,
+);
 export default router;

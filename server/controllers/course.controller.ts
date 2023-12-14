@@ -8,6 +8,7 @@ import courseModel, {
   ICourse,
   ICourseData,
 } from '../models/course.model';
+import NotificationModel from '../models/notification.model'; // NotificationModel
 import { redis } from '../utils/redis';
 import mongoose from 'mongoose';
 import { IUser } from '../models/user.model';
@@ -214,6 +215,11 @@ export const addQuestion = catchAsyncError(
 
       courseContent.question.push(newQuestion);
 
+      await NotificationModel.create({
+        user: req.user?._id,
+        title: 'New Question Added',
+        message: `A new question has been added to your course ${courseContent?.title}`,
+      });
       // save the updated course
       await course?.save();
       res.status(200).json({
@@ -276,6 +282,11 @@ export const addAnswer = catchAsyncError(
 
       if (req.user?._id === question.user._id) {
         // create a notification
+        await NotificationModel.create({
+          user: req.user?._id,
+          title: 'New question reply added',
+          message: `A new reply has been added to your question ${courseContent.title}`,
+        });
       } else {
         const data = {
           name: question.user.name,
