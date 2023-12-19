@@ -1,6 +1,7 @@
 import express, { Router } from 'express';
 import {
   activateUser,
+  deleteUser,
   getAllUsers,
   getUserInfo,
   loginUser,
@@ -11,6 +12,7 @@ import {
   updateAvatar,
   updatePassword,
   updateUserInfo,
+  updateUserRole,
 } from '../controllers/user.controller';
 import { authorizedRoles, isAuthenticated } from '../utils/auth';
 const router: Router = express.Router();
@@ -39,6 +41,18 @@ router.get(
   isAuthenticated,
   authorizedRoles('admin'),
   getAllUsers,
+);
+router.patch(
+  '/update-user-role',
+  isAuthenticated,
+  authorizedRoles('admin'),
+  updateUserRole,
+);
+router.delete(
+  '/delete-user/:id',
+  isAuthenticated,
+  authorizedRoles('admin'),
+  deleteUser,
 );
 
 export default router;
