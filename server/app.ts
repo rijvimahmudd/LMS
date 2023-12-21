@@ -10,6 +10,7 @@ import courseRouter from './routes/course.route';
 import orderRouter from './routes/order.route';
 import notificationRouter from './routes/notification.route';
 import analyticsRouter from './routes/analytics.route';
+import layoutRouter from './routes/layout.route';
 
 export interface CustomError extends Error {
   statusCode: number;
@@ -32,6 +33,7 @@ app.use(
   courseRouter,
   orderRouter,
   analyticsRouter,
+  layoutRouter,
 );
 
 // cors => cross origin resource sharing

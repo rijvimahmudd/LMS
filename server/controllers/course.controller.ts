@@ -113,7 +113,12 @@ export const getSingleCourse = catchAsyncError(
           course.courseData = courseData as ICourseData[];
         }
 
-        await redis.set(courseId, JSON.stringify(course));
+        await redis.set(
+          courseId,
+          JSON.stringify(course),
+          'EX',
+          60 * 60 * 24 * 7,
+        );
         res.status(200).json({
           success: true,
           course,
